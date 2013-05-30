@@ -1,9 +1,9 @@
 #!/usr/bin/python
-''' this module solves an example of the least squares regression problem 
-'''
+''' this module solves an example of a linear least squares regression problem via gradient descent'''
 
 
 import numpy as np
+
 
 def least_squares_via_gradient_descent(A, b, max_gradient_norm=10**-6):
   ''' http://en.wikipedia.org/wiki/Gradient_descent#Solution_of_a_linear_system
@@ -20,14 +20,14 @@ def least_squares_via_gradient_descent(A, b, max_gradient_norm=10**-6):
   assert A.shape[0] >= A.shape[1]
   
   def f(x, A=A, b=b):
-    ''' measure of the optimization value |A*x - b| at point x '''
+    ''' optimization value of |A*x - b| at x'''
     return np.linalg.norm(A*x-b)
-
+  
   def f_grad(x, A=A, b=b):
-    ''' gradient of the function |A*x - b| measured at point x'''
+    ''' gradient of |A*x - b| at x'''
     return 2*A.T*(A*x - b)
 
-  def line_search(x, x_delta, t=1, f=f, f_grad=f_grad, beta=.9):
+  def line_search(x, x_delta, f=f, f_grad=f_grad, t=1, beta=.9):
     ''' define a back-tracking line search tool. 'x_delta' represents search direction. '''
     while f(x + t * x_delta) > f(x + beta * t * x_delta):
       t = beta * t
@@ -46,58 +46,57 @@ def least_squares_via_gradient_descent(A, b, max_gradient_norm=10**-6):
   return x_guess
 
 
-
-# define test data
-np.random.seed(seed=42)
-
-n = 5
-A = np.matrix([np.ones(n),range(n)]).T
-x = np.matrix([5, 10]).T
-b = A*x + np.matrix(np.random.normal(size=n)).T
-
-
-# call the optimization, print the results, compare with a real solution
-x_opt = least_squares_via_gradient_descent(A, b)
-
-print 'Homegrown Gradient Descent (GD) Method'
-print 'GD - Best Fit Params:'
-print x_opt
-print
-print 'GD - Optimal Value for |A*x - b|:'
-print np.linalg.norm(A*x_opt-b)
-print
-print 'GD - Gradient at Solution:'
-print 2*A.T*(A*x_opt - b)
-print
-print 'GD - Gradient Norm at Solution:'
-print np.linalg.norm(2*A.T*(A*x_opt - b))
-print 
-print
-
-
-# the real solution found the real way: (pseudo inverse of A) * b 
-x_opt = np.linalg.lstsq(A,b)[0]
-
-print 'Real Solution, found via linear algebra packages'
-print 'Real - Best Fit Params:'
-print x_opt
-print
-print 'Real - Optimal Value for |A*x - b|:'
-print np.linalg.norm(A*x_opt-b)
-print
-print 'Real - Gradient at Solution:'
-print 2*A.T*(A*x_opt - b)
-print
-print 'Real - Gradient Norm at Solution:'
-print np.linalg.norm(2*A.T*(A*x_opt - b))
-print 
-print
-print 'Actual solution (parameters used to generate the data):'
-print x
-
-
 def main():
   '''  '''
 
+  # define test data
+  np.random.seed(seed=42)
+
+  n = 5
+  A = np.matrix([np.ones(n),range(n)]).T
+  x = np.matrix([5, 10]).T
+  b = A*x + np.matrix(np.random.normal(size=n)).T
+
+  # call the optimization, print the results, compare with a real solution
+  x_opt = least_squares_via_gradient_descent(A, b)
+
+  print
+  print 'Homegrown Gradient Descent (GD) Method'
+  print 'GD - Best Fit Params:'
+  print x_opt
+  print
+  print 'GD - Optimal Value for |A*x - b|:'
+  print np.linalg.norm(A*x_opt-b)
+  print
+  print 'GD - Gradient at Solution:'
+  print 2*A.T*(A*x_opt - b)
+  print
+  print 'GD - Gradient Norm at Solution:'
+  print np.linalg.norm(2*A.T*(A*x_opt - b))
+  print 
+  print
+
+  # the real solution found the real way: (pseudo inverse of A) * b 
+  x_opt = np.linalg.lstsq(A,b)[0]
+
+  print 'Real Solution, found via linear algebra packages'
+  print 'Real - Best Fit Params:'
+  print x_opt
+  print
+  print 'Real - Optimal Value for |A*x - b|:'
+  print np.linalg.norm(A*x_opt-b)
+  print
+  print 'Real - Gradient at Solution:'
+  print 2*A.T*(A*x_opt - b)
+  print
+  print 'Real - Gradient Norm at Solution:'
+  print np.linalg.norm(2*A.T*(A*x_opt - b))
+  print 
+  print
+  print 'Actual solution (parameters used to generate the data):'
+  print x
+  print
+
 if __name__ == '__main__':
   main()
+
